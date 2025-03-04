@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../core/constants/apiEndPoint.dart';
+
+import '../../constants/apiEndPoint.dart';
 import '../models/models.dart';
 
 class repositories {
@@ -19,24 +20,7 @@ class repositories {
     }
   }
 
-  Future<void>createProduct({required String productName, required String img, required int qty, required int unitPrice, required int totalPrice})async{
-    final response = await http.post(Uri.parse(apiEndPoint.createProduct),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(
-          {
-            "ProductName": productName,
-            "ProductCode": DateTime.now().millisecondsSinceEpoch,
-            "Img": img,
-            "Qty": qty,
-            "UnitPrice": unitPrice,
-            "TotalPrice": totalPrice,
-          }
-      )
-    );
 
-    print('createProductStatusCode: ${response.statusCode}');
-    fetchProduct();
-  }
 
   Future<void>deleteProduct({required String id})async{
     final response = await http.get(Uri.parse(apiEndPoint.deletePeoduct(id)));
@@ -44,20 +28,53 @@ class repositories {
     fetchProduct();
   }
 
-  Future<void>updateProduct({required String id,  required String productName, required String img, required int qty, required int unitPrice, required int totalPrice})async {
-    final response = await http.post(Uri.parse(apiEndPoint.updateProduct(id)),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(
-            {
-              "ProductName": productName,
-              "ProductCode": DateTime.now().millisecondsSinceEpoch,
-              "Img": img,
-              "Qty": qty,
-              "UnitPrice": unitPrice,
-              "TotalPrice": totalPrice,
-            }
-        )
+  Future<void> createProduct({
+    required String productName,
+    required String imageUrl,
+    required int qty,
+    required int unitPrice,
+  }) async {
+    int totalPrice = qty * unitPrice; // Automatically calculate total price
+
+    final response = await http.post(
+      Uri.parse(apiEndPoint.createProduct),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "ProductName": productName,
+        "ProductCode": DateTime.now().millisecondsSinceEpoch,
+        "Img": imageUrl,
+        "Qty": qty,
+        "UnitPrice": unitPrice,
+        "TotalPrice": totalPrice,
+      }),
     );
+
+    print('createProductStatusCode: ${response.statusCode}');
+    fetchProduct();
+  }
+
+  Future<void> updateProduct({
+    required String id,
+    required String productName,
+    required String img,
+    required int qty,
+    required int unitPrice,
+  }) async {
+    int totalPrice = qty * unitPrice; // Automatically calculate total price
+
+    final response = await http.post(
+      Uri.parse(apiEndPoint.updateProduct(id)),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "ProductName": productName,
+        "ProductCode": DateTime.now().millisecondsSinceEpoch,
+        "Img": img,
+        "Qty": qty,
+        "UnitPrice": unitPrice,
+        "TotalPrice": totalPrice,
+      }),
+    );
+
     print('updateProductStatusCode: ${response.statusCode}');
     fetchProduct();
   }
